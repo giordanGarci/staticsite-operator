@@ -1,0 +1,6 @@
+namespace: staticsite-system
+namePrefix: staticsite-
+resources:
+  - ../crd
+  - ../rbac
+  - ../manager

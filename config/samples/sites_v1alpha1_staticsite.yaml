@@ -1,0 +1,13 @@
+apiVersion: sites.giordan.io/v1alpha1
+kind: StaticSite
+metadata:
+  name: hello
+spec:
+  replicas: 2
+  content: |
+    <!doctype html>
+    <html>
+      <body>
+        <h1>Hello from a Kubernetes operator!</h1>
+      </body>
+    </html>

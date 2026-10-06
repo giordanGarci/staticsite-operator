@@ -1,0 +1,40 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Unit tests
+        run: make test
+      - name: Generated files are up to date
+        run: git diff --exit-code -- api config
+
+  e2e:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - uses: helm/kind-action@v1
+        with:
+          cluster_name: staticsite
+      - name: Build and load image
+        run: make kind-load
+      - name: Deploy operator
+        run: make deploy
+      - name: End-to-end test
+        run: make e2e
+      - name: Operator logs
+        if: always()
+        run: kubectl -n staticsite-system logs deployment/staticsite-controller-manager --tail=200
